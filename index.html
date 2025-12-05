@@ -2,273 +2,312 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ToolsTopia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ToolsTopia Ultra</title>
 
-<!-- GOOGLE FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-/* ============ GLOBAL CSS ============ */
-*{margin:0;padding:0;box-sizing:border-box}
+/* ---------- GLOBAL ---------- */
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif;}
 body{
-    font-family:"Poppins",sans-serif;
-    background:#f4f6fa;
-    color:#222;
-    transition:0.3s;
+  background:#0b0f14;
+  color:white;
+  padding-bottom:100px;
+  transition:.3s;
 }
+
+/* ---------- HEADER ---------- */
 header{
-    background:#4c6ef5;
-    color:white;
-    padding:18px;
-    font-size:22px;
-    font-weight:600;
-    text-align:center;
+  padding:20px;
+  text-align:center;
+  background:#0a84ff;
+  font-size:26px;
+  font-weight:600;
+  box-shadow:0 2px 10px rgba(0,0,0,0.4);
 }
+
+/* ---------- NAVBAR ---------- */
 nav{
-    background:white;
-    padding:12px;
-    display:flex;
-    justify-content:space-around;
-    border-bottom:1px solid #ddd;
-    position:sticky;
-    top:0;
+  position:fixed;
+  bottom:0; left:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  background:#111821;
+  padding:10px 0;
+  border-top:1px solid #222;
 }
 nav button{
-    background:#4c6ef5;
-    color:white;
-    border:none;
-    padding:10px 18px;
-    border-radius:8px;
-    font-size:14px;
+  background:none;
+  border:none;
+  color:white;
+  font-size:12px;
+  opacity:.7;
 }
-.container{
-    padding:20px;
+nav button.active{
+  opacity:1;
+  color:#0a84ff;
 }
+
+/* ---------- PAGES ---------- */
+.page{display:none;padding:20px;}
+.activePage{display:block;}
+
+/* ---------- CARDS ---------- */
 .card{
-    background:white;
-    border-radius:12px;
-    padding:15px;
-    margin-bottom:15px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.08);
+  background:#111821;
+  padding:18px;
+  border-radius:12px;
+  margin-bottom:15px;
+  box-shadow:0 2px 4px rgba(0,0,0,0.4);
 }
 
-/* hidden pages */
-.page{display:none;}
-.active{display:block;}
-
-/* Input design */
-input,textarea{
-    width:100%;
-    padding:10px;
-    margin:6px 0;
-    border:1px solid #aaa;
-    border-radius:8px;
+/* ---------- INPUT ---------- */
+input,select{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
+  background:#1a2330;
+  color:white;
 }
 
-/* Buttons */
-.btn{
-    background:#4c6ef5;
-    border:none;
-    color:white;
-    padding:10px 15px;
-    border-radius:8px;
-    margin-top:8px;
+/* ---------- BUTTONS ---------- */
+button.action{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#0a84ff;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  color:white;
+  cursor:pointer;
 }
+button.small{
+  padding:6px 10px;
+  background:#0a84ff;
+  border:none;
+  border-radius:8px;
+  margin-left:5px;
+  cursor:pointer;
+}
+button.danger{ background:#ff4d4d; }
 
-/* Inventory list */
-.item-box, .task-box{
-    background:#eef1ff;
-    padding:10px;
-    border-radius:10px;
-    margin-top:10px;
+/* ---------- LIST ITEMS ---------- */
+.item{
+  background:#1a2330;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:8px;
 }
-
-/* Chatbot */
-#chatbox{
-    height:300px;
-    overflow-y:auto;
-    background:#fff;
-    padding:10px;
-    border-radius:10px;
-    border:1px solid #ddd;
-}
-.chat{
-    padding:10px;
-    margin:6px 0;
-    border-radius:10px;
-}
-.user{background:#4c6ef5;color:white;margin-left:40px;}
-.bot{background:#ddd;margin-right:40px;}
-
-/* Dark Mode */
-.dark{
-    background:#1b1b1b;
-    color:white;
-}
-.dark header{background:#222;}
-.dark nav{background:#333;border-bottom:1px solid #444;}
-.dark .card{background:#2c2c2c;color:white;}
-.dark input, .dark textarea{background:#333;border:1px solid #555;color:white;}
-.dark .item-box, .dark .task-box{background:#444;color:white;}
 </style>
 </head>
-
 <body>
 
-<header>ToolsTopia – Smart School Tools System</header>
+<header>ToolsTopia • Ultra</header>
 
 <nav>
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="showPage('inventory')">Inventory</button>
-    <button onclick="showPage('tasks')">Tasks</button>
-    <button onclick="showPage('tips')">Tips</button>
-    <button onclick="showPage('chat')">Chatbot</button>
+  <button class="navBtn active" data-page="loginPage">Login</button>
+  <button class="navBtn" data-page="inventoryPage">Inventory</button>
+  <button class="navBtn" data-page="tasksPage">Tasks</button>
+  <button class="navBtn" data-page="borrowPage">Borrow</button>
+  <button class="navBtn" data-page="tipsPage">Tips</button>
 </nav>
 
-<div class="container">
+<!-- ---------------- LOGIN PAGE ---------------- -->
+<div id="loginPage" class="page activePage">
+  <div class="card">
+    <h2>Sign In / Sign Up</h2>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button class="action" onclick="login()">Login</button>
+    <button class="action" onclick="signup()">Create Account</button>
+    <p id="logMsg" style="color:#ff4d4d;margin-top:10px;"></p>
+  </div>
+</div>
 
-    <!-- HOME -->
-    <div id="home" class="page active">
-        <div class="card">
-            <h2>Welcome to ToolsTopia</h2>
-            <p>Your all-in-one school equipment, borrowing, tasks, and productivity system.</p>
-            <button class="btn" onclick="toggleDark()">Toggle Dark Mode</button>
-        </div>
-    </div>
+<!-- ---------------- INVENTORY ---------------- -->
+<div id="inventoryPage" class="page">
+  <h2>Inventory</h2>
+  <div class="card">
+    <input id="toolName" placeholder="Tool name">
+    <button class="action" onclick="addTool()">Add Tool</button>
+  </div>
+  <div id="inventoryList"></div>
+</div>
 
-    <!-- INVENTORY -->
-    <div id="inventory" class="page">
-        <div class="card">
-            <h2>Inventory System</h2>
+<!-- ---------------- TASKS ---------------- -->
+<div id="tasksPage" class="page">
+  <h2>Tasks</h2>
+  <div class="card">
+    <input id="taskText" placeholder="Task">
+    <select id="priority">
+      <option value="Low">Low Priority</option>
+      <option value="Medium">Medium Priority</option>
+      <option value="High">High Priority</option>
+    </select>
+    <input id="taskDate" type="date">
+    <button class="action" onclick="addTask()">Add Task</button>
+  </div>
+  <div id="taskList"></div>
+</div>
 
-            <input id="itemName" placeholder="Item Name">
-            <input id="itemQty" placeholder="Quantity" type="number">
-            <button class="btn" onclick="addItem()">Add Item</button>
+<!-- ---------------- BORROW / LEND ---------------- -->
+<div id="borrowPage" class="page">
+  <h2>Borrow / Lend</h2>
+  <div class="card">
+    <input id="bTool" placeholder="Tool">
+    <input id="bName" placeholder="Borrower / Lender">
+    <button class="action" onclick="addBorrow()">Add Entry</button>
+  </div>
+  <div id="borrowList"></div>
+</div>
 
-            <h3 style="margin-top:15px;">Items:</h3>
-            <div id="itemList"></div>
-        </div>
-    </div>
-
-    <!-- TASKS -->
-    <div id="tasks" class="page">
-        <div class="card">
-            <h2>Task Manager</h2>
-
-            <input id="taskName" placeholder="Task Name">
-            <textarea id="taskDesc" placeholder="Task Description"></textarea>
-            <button class="btn" onclick="addTask()">Add Task</button>
-
-            <h3 style="margin-top:15px;">Your Tasks:</h3>
-            <div id="taskList"></div>
-        </div>
-    </div>
-
-    <!-- TIPS -->
-    <div id="tips" class="page">
-        <div class="card">
-            <h2>Study Tips</h2>
-            <p>• Manage your time wisely.<br>
-               • Organize tools & tasks.<br>
-               • Never cram everything last minute!</p>
-        </div>
-    </div>
-
-    <!-- CHATBOT -->
-    <div id="chat" class="page">
-        <div class="card">
-            <h2>ToolsTopia Bot</h2>
-
-            <div id="chatbox"></div>
-
-            <input id="chatInput" placeholder="Ask something…">
-            <button class="btn" onclick="sendChat()">Send</button>
-        </div>
-    </div>
+<!-- ---------------- TIPS ---------------- -->
+<div id="tipsPage" class="page">
+  <h2>Daily Tips</h2>
+  <div class="card">
+    <button class="action" onclick="generateTip()">Generate Tip</button>
+    <p id="tipText" style="margin-top:10px;font-size:18px;color:#0a84ff;font-weight:600;"></p>
+  </div>
 </div>
 
 <script>
-/* ========== PAGE NAVIGATION ========= */
-function showPage(id){
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+/* ---------------- NAV ---------------- */
+document.querySelectorAll(".navBtn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("activePage"));
+    document.querySelector(`#${btn.dataset.page}`).classList.add("activePage");
+    document.querySelectorAll(".navBtn").forEach(n=>n.classList.remove("active"));
+    btn.classList.add("active");
+  };
+});
+
+/* ---------------- USER SYSTEM (localStorage) ---------------- */
+let user = localStorage.getItem("user") || "";
+function login(){
+  if(email.value===""||password.value===""){logMsg.innerText="Fill all fields";return;}
+  if(localStorage.getItem("acc_"+email.value)===password.value){
+    user=email.value;
+    localStorage.setItem("user",user);
+    logMsg.innerText="Logged in!";
+  }else logMsg.innerText="Account not found.";
+}
+function signup(){
+  if(email.value===""||password.value===""){logMsg.innerText="Fill all fields";return;}
+  localStorage.setItem("acc_"+email.value,password.value);
+  logMsg.innerText="Account created!";
 }
 
-/* ========== DARK MODE ========= */
-function toggleDark(){
-    document.body.classList.toggle("dark");
+/* ---------------- INVENTORY ---------------- */
+function addTool(){
+  let t=toolName.value.trim();
+  if(!t)return;
+  let list=JSON.parse(localStorage.getItem("inv_"+user)||"[]");
+  list.push(t);
+  localStorage.setItem("inv_"+user,JSON.stringify(list));
+  toolName.value="";
+  loadInventory();
+}
+function delTool(i){
+  let list=JSON.parse(localStorage.getItem("inv_"+user)||"[]");
+  list.splice(i,1);
+  localStorage.setItem("inv_"+user,JSON.stringify(list));
+  loadInventory();
+}
+function loadInventory(){
+  let list=JSON.parse(localStorage.getItem("inv_"+user)||"[]");
+  inventoryList.innerHTML="";
+  list.forEach((t,i)=>{
+    inventoryList.innerHTML+=`
+      <div class="item">
+        ${t}
+        <button class="small danger" onclick="delTool(${i})">X</button>
+      </div>`;
+  });
 }
 
-/* ========== INVENTORY ========= */
-let items = JSON.parse(localStorage.getItem("items") || "[]");
-renderItems();
-
-function addItem(){
-    const name = itemName.value.trim();
-    const qty = itemQty.value;
-    if(!name) return;
-
-    items.push({name,qty});
-    localStorage.setItem("items",JSON.stringify(items));
-    renderItems();
-
-    itemName.value="";
-    itemQty.value="";
-}
-
-function renderItems(){
-    itemList.innerHTML="";
-    items.forEach((it,i)=>{
-        itemList.innerHTML += `
-            <div class="item-box">
-                <b>${it.name}</b> – ${it.qty}
-            </div>
-        `;
-    });
-}
-
-/* ========== TASKS ========= */
-let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-renderTasks();
-
+/* ---------------- TASKS ---------------- */
 function addTask(){
-    const name = taskName.value.trim();
-    const desc = taskDesc.value.trim();
-    if(!name) return;
-
-    tasks.push({name,desc});
-    localStorage.setItem("tasks",JSON.stringify(tasks));
-    renderTasks();
-
-    taskName.value="";
-    taskDesc.value="";
+  let t=taskText.value, p=priority.value, d=taskDate.value;
+  if(!t)return;
+  let list=JSON.parse(localStorage.getItem("task_"+user)||"[]");
+  list.push({t,p,d});
+  localStorage.setItem("task_"+user,JSON.stringify(list));
+  taskText.value="";
+  loadTasks();
+}
+function delTask(i){
+  let list=JSON.parse(localStorage.getItem("task_"+user)||"[]");
+  list.splice(i,1);
+  localStorage.setItem("task_"+user,JSON.stringify(list));
+  loadTasks();
+}
+function loadTasks(){
+  let list=JSON.parse(localStorage.getItem("task_"+user)||"[]");
+  taskList.innerHTML="";
+  list.forEach((x,i)=>{
+    taskList.innerHTML+=`
+      <div class="item">
+        <b>${x.t}</b><br>
+        Priority: ${x.p}<br>
+        Due: ${x.d}
+        <button class="small danger" onclick="delTask(${i})">Delete</button>
+      </div>`;
+  });
 }
 
-function renderTasks(){
-    taskList.innerHTML="";
-    tasks.forEach(t=>{
-        taskList.innerHTML += `
-            <div class="task-box">
-                <b>${t.name}</b><br>${t.desc}
-            </div>
-        `;
-    });
+/* ---------------- BORROW ---------------- */
+function addBorrow(){
+  let t=bTool.value.trim(), n=bName.value.trim();
+  if(!t||!n)return;
+  let list=JSON.parse(localStorage.getItem("bor_"+user)||"[]");
+  list.push({t,n});
+  localStorage.setItem("bor_"+user,JSON.stringify(list));
+  bTool.value=""; bName.value="";
+  loadBorrow();
+}
+function delBorrow(i){
+  let list=JSON.parse(localStorage.getItem("bor_"+user)||"[]");
+  list.splice(i,1);
+  localStorage.setItem("bor_"+user,JSON.stringify(list));
+  loadBorrow();
+}
+function loadBorrow(){
+  let list=JSON.parse(localStorage.getItem("bor_"+user)||"[]");
+  borrowList.innerHTML="";
+  list.forEach((x,i)=>{
+    borrowList.innerHTML+=`
+      <div class="item">
+        <b>${x.t}</b> — ${x.n}
+        <button class="small danger" onclick="delBorrow(${i})">X</button>
+      </div>`;
+  });
 }
 
-/* ========== CHATBOT ========= */
-function sendChat(){
-    let msg = chatInput.value.trim();
-    if(!msg) return;
-
-    chatbox.innerHTML += `<div class="chat user">${msg}</div>`;
-    chatInput.value="";
-
-    setTimeout(()=>{
-        chatbox.innerHTML += `<div class="chat bot">I got you! "${msg}" sounds important.</div>`;
-        chatbox.scrollTop = chatbox.scrollHeight;
-    },500);
+/* ---------------- TIPS ---------------- */
+let tips=[
+  "Organize tools by category for faster access.",
+  "Always label borrowed items to avoid loss.",
+  "Check your inventory weekly.",
+  "Prioritize tasks by urgency.",
+  "Keep a backup of your tool list."
+];
+function generateTip(){
+  tipText.innerText=tips[Math.floor(Math.random()*tips.length)];
 }
+
+/* ---------------- AUTO LOAD ON LOGIN ---------------- */
+setInterval(()=>{
+  if(user){
+    loadInventory();
+    loadTasks();
+    loadBorrow();
+  }
+},500);
 </script>
 
 </body>
