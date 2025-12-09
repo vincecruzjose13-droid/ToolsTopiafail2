@@ -1,1 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ToolsTopia Ultra+ (Graph Edition)</title>
 
+<!-- Fonts & Chart.js -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  :root{
+    --bg: #061016;
+    --panel: #0d1b24;
+    --muted: #98a6b3;
+    --accent: #0a84ff;
+    --accent-2: #00d4ff;
+    --success: #3ad29f;
+    --danger: #ff6b6b;
+    --glass: rgba(255,255,255,0.03);
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:#e9f2fb}
+  header{background:linear-gradient(135deg,var(--accent),#0070f3);padding:18px 20px;border-bottom-left-radius:20px;border-bottom-right-radius:20px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+  header h1{font-size:20px;margin:0}
+  .wrap{max-width:1100px;margin:20px auto;padding:0 18px}
+  .topbar{display:flex;gap:12px;align-items:center;margin-top:14px}
+  .pill{background:var(--panel);padding:8px 12px;border-radius:999px;border:1px solid var(--glass);font-weight:600;color:var(--accent-2)}
+
+  /* layout */
+  .grid{display:grid;grid-template-columns: 1fr 420px;gap:18px;margin-top:18px}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:14px;border:1px solid var(--glass);box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+  h2{font-size:18px;margin-bottom:10px;color:#dff3ff}
+  small{color:var(--muted)}
+
+  /* Inventory controls */
+  .row{display:flex;gap:10px}
+  .col{flex:1}
+  input,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+  button{background:var(--accent);color:#001;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .list{margin-top:12px;max-height:360px;overflow:auto}
+  .item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(180deg,#05121a,#071824);margin-bottom:8px;border:1px solid rgba(255,255,255,0.02)}
+  .meta{display:flex;gap:10px;align-items:center}
+  .avatar{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--accent),var(--accent-2));font-weight:800;color:#001}
+  .muted{color:var(--muted);font-size:13px}
+
+  /* Right column */
+  .side-section{display:flex;flex-direction:column;gap:12px}
+  canvas{background:transparent;display:block}
+
+  /* chatbot */
+  .chatbox{position:fixed;right:18px;bottom:88px;width:340px;max-width:calc(100% - 36px);border-radius:12px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.6);display:none;z-index:9999}
+  .chatheader{background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:12px;color:#001;font-weight:700}
+  .chatbody{background:#07121a;padding:12px;height:280px;overflow:auto}
+  .chatinput{display:flex;padding:10px;background:#05121a;border-top:1px solid rgba(255,255,255,0.02)}
+  .chatinput input{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent}
+  .fab{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:16px;background:linear-gradient(90deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#001;font-weight:800;cursor:pointer;box-shadow:0 14px 40px rgba(2,6,23,0.6);z-index:9999}
+
+  /* small helpers */
+  .muted-pill{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:999px;color:var(--muted)}
+  .top-controls{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+  .search{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+  .stat-row{display:flex;gap:12px}
+  .stat{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:12px;border-radius:10px;text-align:center}
+
+  /* small */
+  .tiny{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap" style="max-width:1100px;margin:auto;display:flex;align-items:center;gap:12px">
+    <div style="flex:1">
+      <h1>ToolsTopia • Ultra+</h1>
+      <small>Smart school toolkit — inventory, borrow/lend, tasks, and analytics</small>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="pill muted-pill" id="userPill">Not signed in</div>
+      <button class="pill ghost" id="signOutBtn" style="display:none">Sign Out</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="pill muted-pill">Dark theme</div>
+    <div style="flex:1"></div>
+    <div class="tiny">Ultra+ edition</div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: MAIN CONTENT -->
+    <div>
+      <!-- AUTH CARD -->
+      <div class="card" id="authCard">
+        <h2>Account</h2>
+        <div class="row">
+          <input id="email" placeholder="email@example.com" />
+          <input id="password" placeholder="password" type="password" />
+          <button id="loginBtn">Login</button>
+          <button id="signupBtn" class="ghost">Sign up</button>
+        </div>
+        <div class="tiny" style="margin-top:8px">Accounts stored locally for demo. For production use Firebase/Auth.</div>
+      </div>
+
+      <!-- INVENTORY with chart -->
+      <div class="card">
+        <h2>Inventory</h2>
+        <div class="top-controls">
+          <input id="search" class="search" placeholder="Search tools or category..." />
+          <select id="filterCat" style="width:160px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent">
+            <option value="">All categories</option>
+          </select>
+          <button class="ghost" id="exportBtn">Export CSV</button>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="flex:1">
+            <div class="row" style="margin-bottom:10px">
+              <input id="toolName" placeholder="Tool name (e.g., Multimeter)" />
+              <input id="toolQty" type="number" placeholder="Qty" />
+              <select id="toolCat">
+                <option value="General">General</option>
+                <option value="ICT">ICT</option>
+                <option value="TLE">TLE</option>
+                <option value="Science">Science</option>
+                <option value="Sports">Sports</option>
+              </select>
+              <button id="addToolBtn">Add</button>
+            </div>
+
+            <div class="list" id="inventoryList"></div>
+          </div>
+
+          <div style="width:340px">
+            <div style="height:200px" class="card">
+              <h3 style="margin-bottom:6px">Inventory Overview</h3>
+              <canvas id="invDonut" width="300" height="150"></canvas>
+            </div>
+            <div style="margin-top:12px" class="card">
+              <h3 style="margin-bottom:6px">Top Tools (by qty)</h3>
+              <canvas id="invBar" width="300" height="140"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASKS -->
+      <div class="card">
+        <h2>Tasks</h2>
+        <div class="row">
+          <input id="taskText" placeholder="Task e.g., Prepare project" />
+          <select id="taskPriority">
+            <option value="Low">Low</option>
+            <option value="Med">Medium</option>
+            <option value="High">High</option>
+          </select>
+          <input id="taskDue" type="date" style="width:150px" />
+          <button id="addTaskBtn">Add Task</button>
+        </div>
+        <div id="tasksList" style="margin-top:12px"></div>
+      </div>
+
+      <!-- BORROW / LEND -->
+      <div class="card">
+        <h2>Borrow / Lend</h2>
+        <div class="row">
+          <input id="bTool" placeholder="Tool name" />
+          <input id="bPerson" placeholder="Person" />
+          <input id="bDue" type="date" />
+          <button id="addBorrowBtn">Add</button>
+        </div>
+        <div id="borrowList" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: SIDE PANEL -->
+    <aside class="side-section">
+      <div class="card">
+        <h2>Quick Stats</h2>
+        <div class="stat-row" style="margin-top:8px">
+          <div class="stat"><div class="muted">Total Items</div><div id="statTotal" style="font-size:20px;margin-top:6px">0</div></div>
+          <div class="stat"><div class="muted">Borrowed</div><div id="statBorrowed" style="font-size:20px;margin-top:6px">0</div></div>
+          <div class="stat"><div class="muted">Tasks</div><div id="statTasks" style="font-size:20px;margin-top:6px">0</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Activity Log</h2>
+        <div id="activity" style="max-height:260px;overflow:auto;margin-top:10px"></div>
+        <div style="margin-top:10px"><button id="clearActivity" class="ghost">Clear log</button></div>
+      </div>
+
+      <div class="card">
+        <h2>Tips</h2>
+        <div><small>Smart tip generator — click to get a useful tip.</small></div>
+        <div style="margin-top:10px">
+          <button id="tipBtn">Get Tip</button>
+          <div id="tipBox" style="margin-top:10px;font-weight:700;color:var(--accent-2)"></div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+<!-- Chatbot & FAB -->
+<div class="chatbox" id="chatbox">
+  <div class="chatheader">ToolsTopia Helper</div>
+  <div class="chatbody" id="chatbody"></div>
+  <div class="chatinput">
+    <input id="chatInput" placeholder="Ask a quick question (e.g. how to add tool)"/>
+    <button id="sendChat" style="margin-left:8px;padding:10px;border-radius:8px;background:var(--accent);color:#001;border:none">Send</button>
+  </div>
+</div>
+<div class="fab" id="fab">✳</div>
+
+<script>
+/* =======================
+   Utilities & Storage Keys
+   ======================= */
+const UID_KEY = "tt_user";
+const INV_KEY = "tt_inv_";       // + user
+const TASK_KEY = "tt_task_";     // + user
+const BOR_KEY = "tt_bor_";       // + user
+const ACT_KEY = "tt_act_";       // + user
+
+let currentUser = localStorage.getItem(UID_KEY) || "";
+
+/* =======================
+   DOM Elements
+   ======================= */
+const el = id => document.getElementById(id);
+const userPill = el("userPill");
+const signOutBtn = el("signOutBtn");
+const loginBtn = el("loginBtn");
+const signupBtn = el("signupBtn");
+const emailInput = el("email");
+const passInput = el("password");
+
+const addToolBtn = el("addToolBtn");
+const toolNameInput = el("toolName");
+const toolQtyInput = el("toolQty");
+const toolCatInput = el("toolCat");
+const inventoryList = el("inventoryList");
+const filterCat = el("filterCat");
+const searchInput = el("search");
+
+const invDonutCtx = document.getElementById('invDonut').getContext('2d');
+const invBarCtx = document.getElementById('invBar').getContext('2d');
+
+const tasksList = el("tasksList");
+const addTaskBtn = el("addTaskBtn");
+const taskText = el("taskText");
+const taskPriority = el("taskPriority");
+const taskDue = el("taskDue");
+
+const borrowList = el("borrowList");
+const addBorrowBtn = el("addBorrowBtn");
+const bTool = el("bTool");
+const bPerson = el("bPerson");
+const bDue = el("bDue");
+
+const statTotal = el("statTotal");
+const statBorrowed = el("statBorrowed");
+const statTasks = el("statTasks");
+
+const activityBox = el("activity");
+const clearActivity = el("clearActivity");
+
+const tipBtn = el("tipBtn");
+const tipBox = el("tipBox");
+
+const chatbox = el("chatbox");
+const chatbody = el("chatbody");
+const chatInput = el("chatInput");
+const sendChat = el("sendChat");
+const fab = el("fab");
+
+const exportBtn = el("exportBtn");
+
+/* =======================
+   Small helpers
+   ======================= */
+function logAct(msg){
+  const key = ACT_KEY + (currentUser||"guest");
+  let arr = JSON.parse(localStorage.getItem(key) || "[]");
+  arr.unshift({t:Date.now(), m:msg});
+  localStorage.setItem(key, JSON.stringify(arr.slice(0,200)));
+  renderActivity();
+}
+function renderActivity(){
+  const key = ACT_KEY + (currentUser||"guest");
+  let arr = JSON.parse(localStorage.getItem(key) || "[]");
+  activityBox.innerHTML = arr.map(a => `<div style="padding:8px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);margin-bottom:8px"><small style="color:var(--muted)">${new Date(a.t).toLocaleString()}</small><div style="margin-top:6px">${escapeHtml(a.m)}</div></div>`).join("") || "<div class='tiny muted'>No activity yet</div>";
+}
+
+/* safe escape */
+function escapeHtml(s){ return (s||"").toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* =======================
+   Account system (local)
+   ======================= */
+function setUser(u){
+  currentUser = u;
+  if(u) localStorage.setItem(UID_KEY,u);
+  else localStorage.removeItem(UID_KEY);
+  userPill.textContent = u ? u : "Not signed in";
+  signOutBtn.style.display = u ? "inline-block":"none";
+  renderAll();
+}
+
+signupBtn.addEventListener('click', ()=>{
+  const em = (emailInput.value||"").trim();
+  const pw = (passInput.value||"").trim();
+  if(!em || !pw){ alert('enter email & password'); return; }
+  // store simple account (demo only) - key: acct_{email}
+  localStorage.setItem("acct_"+em, pw);
+  alert("Account created (demo). Please login.");
+  emailInput.value = "";
+  passInput.value = "";
+});
+
+loginBtn.addEventListener('click', ()=>{
+  const em = (emailInput.value||"").trim();
+  const pw = (passInput.value||"").trim();
+  if(!em||!pw){ alert('enter email & password'); return; }
+  const stored = localStorage.getItem("acct_"+em);
+  if(stored && stored === pw){
+    setUser(em);
+    emailInput.value=""; passInput.value="";
+    logAct("Signed in");
+  } else {
+    alert("Account not found (demo). Create account first.");
+  }
+});
+
+signOutBtn.addEventListener('click', ()=>{
+  logAct("Signed out");
+  setUser("");
+});
+
+/* =======================
+   Inventory (CRUD + Charts)
+   ======================= */
+function invKey(){ return INV_KEY + (currentUser||"guest"); }
+function loadInv(){ return JSON.parse(localStorage.getItem(invKey()) || "[]"); }
+function saveInv(arr){ localStorage.setItem(invKey(), JSON.stringify(arr)); }
+
+function addCategoryOption(cat){
+  // add to select if not present
+  let exists = Array.from(filterCat.options).some(o=>o.value===cat);
+  if(!exists){
+    let opt = document.createElement('option'); opt.value = cat; opt.textContent = cat;
+    filterCat.appendChild(opt);
+  }
+}
+function addTool(){
+  const name = (toolNameInput.value||"").trim();
+  const qty = parseInt(toolQtyInput.value||"1",10) || 1;
+  const cat = (toolCatInput.value||"General").trim();
+  if(!name){ alert("Tool name required"); return; }
+  let arr = loadInv();
+  arr.push({id:Date.now(), name, qty, cat});
+  saveInv(arr);
+  addCategoryOption(cat);
+  toolNameInput.value=""; toolQtyInput.value=""; toolCatInput.value="General";
+  logAct(`Added tool: ${name} (${qty})`);
+  renderInv();
+}
+addToolBtn.addEventListener('click', addTool);
+
+function renderInv(){
+  let arr = loadInv();
+  // apply search & filter
+  const q = (searchInput.value||"").toLowerCase();
+  const fc = (filterCat.value||"");
+  let filtered = arr.filter(i=>{
+    if(fc && fc !== "" && i.cat !== fc) return false;
+    if(q && !(i.name.toLowerCase().includes(q) || i.cat.toLowerCase().includes(q))) return false;
+    return true;
+  });
+
+  // sort by created id desc (recent first)
+  filtered.sort((a,b)=> b.id - a.id);
+
+  inventoryList.innerHTML = filtered.map((it,idx)=>`
+    <div class="item">
+      <div class="meta">
+        <div class="avatar">${escapeHtml(it.name.slice(0,2).toUpperCase())}</div>
+        <div>
+          <div style="font-weight:700">${escapeHtml(it.name)}</div>
+          <div class="muted">${escapeHtml(it.cat)} • Qty: <b>${it.qty}</b></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="ghost" onclick="editTool(${it.id})">Edit</button>
+        <button class="ghost" onclick="incTool(${it.id})">+1</button>
+        <button class="ghost" onclick="decTool(${it.id})">-1</button>
+        <button class="danger" onclick="removeTool(${it.id})">Delete</button>
+      </div>
+    </div>
+  `).join("") || "<div class='muted tiny'>No tools yet</div>";
+
+  // update charts & stats
+  updateCharts();
+}
+
+function findToolById(id){ return loadInv().find(it=>it.id===id); }
+
+function editTool(id){
+  const it = findToolById(id);
+  if(!it) return;
+  const newName = prompt("Edit tool name", it.name);
+  if(newName===null) return;
+  const newCat = prompt("Category", it.cat) || it.cat;
+  it.name = newName.trim() || it.name;
+  it.cat = newCat.trim() || it.cat;
+  // save
+  let arr = loadInv();
+  arr = arr.map(x=> x.id===id ? it : x );
+  saveInv(arr);
+  addCategoryOption(it.cat);
+  logAct(`Edited tool: ${it.name}`);
+  renderInv();
+}
+
+function incTool(id){
+  let arr = loadInv();
+  arr = arr.map(x=> x.id===id ? {...x, qty: x.qty+1} : x );
+  saveInv(arr); renderInv(); logAct("Increased qty");
+}
+function decTool(id){
+  let arr = loadInv();
+  arr = arr.map(x=> x.id===id ? {...x, qty: Math.max(0, x.qty-1)} : x );
+  saveInv(arr); renderInv(); logAct("Decreased qty");
+}
+function removeTool(id){
+  if(!confirm("Remove this tool?")) return;
+  let arr = loadInv().filter(x=> x.id!==id);
+  saveInv(arr); renderInv(); logAct("Removed tool");
+}
+
+/* Charts */
+let donutChart, barChart;
+function updateCharts(){
+  const arr = loadInv();
+  // group by category count
+  const byCat = {};
+  arr.forEach(it=> { byCat[it.cat] = (byCat[it.cat]||0) + (it.qty||0); });
+  const labels = Object.keys(byCat);
+  const values = labels.map(k=> byCat[k]);
+
+  // donut
+  if(donutChart) donutChart.destroy();
+  donutChart = new Chart(invDonut, {
+    type:'doughnut',
+    data:{labels, datasets:[{data:values, backgroundColor: labels.map((l,i)=>['#0a84ff','#00d4ff','#3ad29f','#ffb86b','#ff6b6b'][i%5])}]},
+    options:{plugins:{legend:{position:'bottom',labels:{color:'#e6f3ff'}}}}
+  });
+
+  // top tools by qty (bar)
+  const top = arr.slice().sort((a,b)=> b.qty - a.qty).slice(0,6);
+  const bLabels = top.map(t=> t.name);
+  const bVals = top.map(t=> t.qty);
+  if(barChart) barChart.destroy();
+  barChart = new Chart(invBar, {
+    type:'bar',
+    data:{labels:bLabels, datasets:[{label:'Qty',data:bVals,backgroundColor:'#0a84ff'}]},
+    options:{scales:{x:{ticks:{color:'#e6f3ff'}},y:{ticks:{color:'#e6f3ff'}}}, plugins:{legend:{display:false}}}
+  });
+
+  // stats
+  statTotal.textContent = arr.reduce((s,i)=> s+(i.qty||0),0);
+  const borrowed = JSON.parse(localStorage.getItem(BOR_KEY + (currentUser||"guest")) || "[]").length;
+  statBorrowed.textContent = borrowed;
+}
+
+/* =======================
+   Tasks
+   ======================= */
+function taskKey(){ return TASK_KEY + (currentUser||"guest"); }
+function loadTasks(){ return JSON.parse(localStorage.getItem(taskKey()) || "[]"); }
+function saveTasks(a){ localStorage.setItem(taskKey(), JSON.stringify(a)); }
+addTaskBtn.addEventListener('click', ()=>{
+  const t = (taskText.value||"").trim(); if(!t) return;
+  const p = taskPriority.value; const d = taskDue.value;
+  let arr = loadTasks(); arr.push({id:Date.now(), t, p, d, done:false});
+  saveTasks(arr); taskText.value=""; taskDue.value=""; logAct("Added task: "+t); renderTasks();
+});
+function toggleTask(id){ let arr=loadTasks(); arr=arr.map(x=> x.id===id? {...x,done:!x.done}:x); saveTasks(arr); renderTasks(); logAct("Toggled task"); }
+function delTask(id){ if(!confirm("Delete task?")) return; let arr=loadTasks().filter(x=> x.id!==id); saveTasks(arr); renderTasks(); logAct("Deleted task"); }
+
+function renderTasks(){
+  const arr = loadTasks().slice().sort((a,b)=> a.done - b.done || (a.d||"").localeCompare(b.d||""));
+  tasksList.innerHTML = arr.map(x=>`
+    <div class="item">
+      <div>
+        <div style="font-weight:700">${escapeHtml(x.t)} ${x.done?'<span class="muted">✔</span>':''}</div>
+        <div class="muted">Priority: ${x.p} ${x.d? '• Due '+x.d : ''}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="ghost" onclick="toggleTask(${x.id})">${x.done?'Undo':'Done'}</button>
+        <button class="danger" onclick="delTask(${x.id})">Delete</button>
+      </div>
+    </div>`).join("") || "<div class='muted tiny'>No tasks</div>";
+  statTasks.textContent = arr.filter(x=> !x.done).length || 0;
+}
+
+/* =======================
+   Borrow / Lend
+   ======================= */
+function borKey(){ return BOR_KEY + (currentUser||"guest"); }
+function loadBors(){ return JSON.parse(localStorage.getItem(borKey()) || "[]"); }
+function saveBors(a){ localStorage.setItem(borKey(), JSON.stringify(a)); }
+addBorrowBtn.addEventListener('click', ()=>{
+  const t = (bTool.value||"").trim(); const n = (bPerson.value||"").trim(); const due = bDue.value || "";
+  if(!t||!n) return;
+  let arr = loadBors(); arr.push({id:Date.now(), t, n, due, returned:false});
+  saveBors(arr); bTool.value=""; bPerson.value=""; bDue.value=""; renderBorrow(); logAct("Added borrow: "+t+" -> "+n);
+});
+function toggleReturned(id){ let arr = loadBors().map(x=> x.id===id? {...x, returned: !x.returned} : x); saveBors(arr); renderBorrow(); logAct("Toggled return"); }
+function delBorrow(id){ if(!confirm("Delete record?")) return; let arr = loadBors().filter(x=> x.id!==id); saveBors(arr); renderBorrow(); logAct("Deleted borrow"); }
+function renderBorrow(){
+  const arr = loadBors().slice().sort((a,b)=> b.id - a.id);
+  borrowList.innerHTML = arr.map(x=>`
+    <div class="item">
+      <div>
+        <div style="font-weight:700">${escapeHtml(x.t)} ${x.returned?'<span class="muted">• Returned</span>':''}</div>
+        <div class="muted">${escapeHtml(x.n)} ${x.due? '• Due '+escapeHtml(x.due):''}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="ghost" onclick="toggleReturned(${x.id})">${x.returned?'Undo':'Returned'}</button>
+        <button class="danger" onclick="delBorrow(${x.id})">Delete</button>
+      </div>
+    </div>`).join("") || "<div class='muted tiny'>No borrow records</div>";
+}
+
+/* =======================
+   Activity & Tips
+   ======================= */
+clearActivity.addEventListener('click', ()=> { if(!confirm('Clear activity?')) return; localStorage.removeItem(ACT_KEY + (currentUser||"guest")); renderActivity(); });
+
+const TIPS = [
+  "Label every tool with your name.",
+  "Check inventory before and after class.",
+  "Use categories for faster searching.",
+  "Take photos of tools before lending.",
+  "Export CSV monthly as backup."
+];
+tipBtn.addEventListener('click', ()=> {
+  tipBox.textContent = TIPS[Math.floor(Math.random()*TIPS.length)];
+  logAct("Generated tip");
+});
+
+/* =======================
+   Chatbot (simple)
+   ======================= */
+fab.addEventListener('click', ()=> {
+  chatbox.style.display = chatbox.style.display === 'block' ? 'none' : 'block';
+  if(chatbox.style.display === 'block') chatbody.innerHTML = "<div class='muted tiny'>Hi! Ask about tools, tasks, exports, or site features.</div>";
+});
+sendChat.addEventListener('click', ()=> runChat());
+chatInput.addEventListener('keypress', (e)=> { if(e.key==='Enter') runChat(); });
+
+function runChat(){
+  const q = (chatInput.value||"").trim();
+  if(!q) return;
+  chatbody.innerHTML += `<div style="padding:8px;margin:8px 0;border-radius:8px;background:linear-gradient(180deg,#071324,#081824)"><b>You:</b> ${escapeHtml(q)}</div>`;
+  chatInput.value="";
+  setTimeout(()=>{
+    let r = quickReply(q);
+    chatbody.innerHTML += `<div style="padding:8px;margin:8px 0;border-radius:8px;background:linear-gradient(180deg,#0a84ff,#00d4ff);color:#001"><b>Bot:</b> ${escapeHtml(r)}</div>`;
+    chatbody.scrollTop = chatbody.scrollHeight;
+    logAct("Chatbot used: "+q);
+  },400);
+}
+function quickReply(q){
+  q=q.toLowerCase();
+  if(q.includes('add') && q.includes('tool')) return 'To add a tool: use the Inventory panel — enter name, qty, category and click Add.';
+  if(q.includes('export')) return 'Click Export CSV to download all your data as a CSV file.';
+  if(q.includes('borrow')) return 'In Borrow/Lend, add the tool name and person — you can mark returned later.';
+  if(q.includes('task')) return 'Use Tasks to add tasks with priority and due date. Mark done to finish.';
+  return "I can help with Inventory, Tasks, Borrow/Lend, or Exports. Try asking 'how to add tool' or 'export data'.";
+}
+
+/* =======================
+   Export / Import CSV
+   ======================= */
+exportBtn.addEventListener('click', ()=> {
+  const inv = loadInv(), tasks = loadTasks(), bors = loadBors();
+  const rows = [["type","id","name","qty","category","extra"]];
+  inv.forEach(i=> rows.push(["inv",i.id,i.name,i.qty,i.cat,""]));
+  tasks.forEach(t=> rows.push(["task",t.id,t.t,"",t.p,t.d]));
+  bors.forEach(b=> rows.push(["bor",b.id,b.t,"",b.n,b.due||""]));
+  downloadCSV("toolstopia_export.csv", rows);
+  logAct("Exported CSV");
+});
+
+function downloadCSV(fname, rows){
+  const csv = rows.map(r => r.map(c => `"${(''+(c||'')).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* =======================
+   Init / Render All
+   ======================= */
+function renderCategories(){
+  // reset filter options
+  const arr = loadInv();
+  const cats = Array.from(new Set(arr.map(x=>x.cat))).sort();
+  filterCat.innerHTML = '<option value="">All categories</option>';
+  cats.forEach(c=> { const o = document.createElement('option'); o.value=c; o.textContent=c; filterCat.appendChild(o); });
+}
+
+searchInput.addEventListener('input', renderInv);
+filterCat.addEventListener('change', renderInv);
+
+function renderAll(){
+  renderInv();
+  renderTasks();
+  renderBorrow();
+  renderActivity();
+  renderCategories();
+}
+function init(){
+  // if no user, default 'guest' but not signed in
+  userPill.textContent = currentUser ? currentUser : "Not signed in";
+  if(currentUser) signOutBtn.style.display = "inline-block"; else signOutBtn.style.display = "none";
+
+  // initial render
+  renderAll();
+  logAct("App loaded");
+}
+init();
+
+/* =======================
+   Auto-save backups (localStorage)
+   ======================= */
+window.addEventListener('beforeunload', ()=> {
+  // backups already in localStorage
+});
+
+/* =======================
+   Small convenience: seed demo data (only if empty)
+   ======================= */
+(function seed(){
+  const key = INV_KEY + (currentUser||"guest");
+  if(!localStorage.getItem(key)){
+    const sample = [
+      {id:Date.now()+1,name:"Multimeter",qty:5,cat:"ICT"},
+      {id:Date.now()+2,name:"Screwdriver Set",qty:12,cat:"TLE"},
+      {id:Date.now()+3,name:"Ethernet Cable",qty:20,cat:"ICT"},
+      {id:Date.now()+4,name:"Microscope Slide",qty:8,cat:"Science"}
+    ];
+    localStorage.setItem(key, JSON.stringify(sample));
+  }
+  renderAll();
+})();
+
+</script>
+</body>
+</html>
