@@ -294,49 +294,7 @@ function renderActivity(){
 }
 
 /* safe escape */
-function escapeHtml(s){ return (s||"").toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* =======================
-   Account system (local)
-   ======================= */
-function setUser(u){
-  currentUser = u;
-  if(u) localStorage.setItem(UID_KEY,u);
-  else localStorage.removeItem(UID_KEY);
-  userPill.textContent = u ? u : "Not signed in";
-  signOutBtn.style.display = u ? "inline-block":"none";
-  renderAll();
-}
-
-signupBtn.addEventListener('click', ()=>{
-  const em = (emailInput.value||"").trim();
-  const pw = (passInput.value||"").trim();
-  if(!em || !pw){ alert('enter email & password'); return; }
-  // store simple account (demo only) - key: acct_{email}
-  localStorage.setItem("acct_"+em, pw);
-  alert("Account created (demo). Please login.");
-  emailInput.value = "";
-  passInput.value = "";
-});
-
-loginBtn.addEventListener('click', ()=>{
-  const em = (emailInput.value||"").trim();
-  const pw = (passInput.value||"").trim();
-  if(!em||!pw){ alert('enter email & password'); return; }
-  const stored = localStorage.getItem("acct_"+em);
-  if(stored && stored === pw){
-    setUser(em);
-    emailInput.value=""; passInput.value="";
-    logAct("Signed in");
-  } else {
-    alert("Account not found (demo). Create account first.");
-  }
-});
-
-signOutBtn.addEventListener('click', ()=>{
-  logAct("Signed out");
-  setUser("");
-});
+function escapeHtml(s){ return (s||"").toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); 
 
 /* =======================
    Inventory (CRUD + Charts)
