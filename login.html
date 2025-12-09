@@ -1,18 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Login • ToolsTopia</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login • ToolsTopia</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="center">
-<div class="card">
-<h2>Login</h2>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<a href="register.html">Create account</a>
-</div>
-<script src="script.js"></script>
+
+<body class="login-body">
+
+  <div class="login-card">
+    <h2>Welcome to ToolsTopia</h2>
+    <p class="tagline">Manage tools, tasks, borrow, analytics.</p>
+
+    <input type="email" id="emailInput" placeholder="Email">
+    <input type="password" id="passwordInput" placeholder="Password">
+
+    <button id="loginBtn">Login</button>
+    <small>Not registered? <a id="signupBtn">Create account</a></small>
+
+    <p id="loginError"></p>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="script.js"></script>
+
 </body>
 </html>
-
