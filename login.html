@@ -1,22 +1,83 @@
-<body class="login-body">
-  <div class="login-container">
-    <h1 class="brand">ToolsTopia</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login | ToolsTopia</title>
 
-    <div class="login-box">
+<link rel="stylesheet" href="styles.css">
 
-      <h2>Welcome Back</h2>
+<style>
+body{
+  margin:0;
+  font-family:Poppins, sans-serif;
+  background:#0a0f1a;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
 
-      <input id="emailInput" type="email" placeholder="Email">
-      <input id="passwordInput" type="password" placeholder="Password">
+.login-box{
+  width:90%;
+  max-width:350px;
+  background:#111a28;
+  padding:30px;
+  border-radius:12px;
+  box-shadow:0 0 15px rgba(0,0,0,.5);
+  text-align:center;
+  color:white;
+}
+.login-box input{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:none;
+  border-radius:6px;
+  background:#1a2435;
+  color:white;
+}
+.login-box button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:6px;
+  background:#0a84ff;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+.login-box button.outline{
+  background:#283246;
+}
+</style>
+</head>
 
-      <button id="loginBtn">Login</button>
-      <button id="signupBtn" class="outline">Create Account</button>
-      <p id="loginError"></p>
+<body>
 
-    </div>
-  </div>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<div class="login-box">
+  <h2>ToolsTopia</h2>
+  <p>Login or Create Account</p>
+
+  <input type="email" id="emailInput" placeholder="Email">
+  <input type="password" id="passwordInput" placeholder="Password">
+
+  <button id="loginBtn">Login</button>
+  <button id="signupBtn" class="outline">Create Account</button>
+  
+  <p id="loginError"></p>
+</div>
+
+
+<!-- Firebase MUST be first -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<!-- your logic -->
 <script src="script.js"></script>
+
 </body>
 </html>
+
