@@ -53,3 +53,60 @@ body{
   font-size:13px;
   opacity:.8;
 }
+
+.login-body{
+  background:#0a0f1a;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  font-family:poppins, sans-serif;
+}
+
+.login-container{
+  text-align:center;
+  width:100%;
+}
+
+.brand{
+  color:white;
+  font-weight:600;
+  margin-bottom:24px;
+  letter-spacing:1px;
+}
+
+.login-box{
+  background:#111a28;
+  margin:auto;
+  width:90%;
+  max-width:340px;
+  padding:30px;
+  border-radius:10px;
+  color:white;
+  box-shadow:0 8px 30px rgba(0,0,0,.4);
+}
+
+.login-box input{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:6px;
+  background:#1a2435;
+  color:white;
+  margin-top:10px;
+}
+
+.login-box button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:6px;
+  background:#0a84ff;
+  color:white;
+  margin-top:14px;
+  font-weight:600;
+}
+
+.login-box .outline{
+  background:#262f44;
+}
