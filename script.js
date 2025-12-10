@@ -11,27 +11,30 @@ firebase.initializeApp(firebaseConfig);
 
 const auth=firebase.auth();
 
-/* LOGIN */
-loginBtn?.addEventListener("click",()=>{
-  auth.signInWithEmailAndPassword(
-    emailInput.value,passwordInput.value
-  ).then(()=>{
-    window.location="index.html";
-  }).catch(e=>{
-    loginError.textContent=e.message;
+document.addEventListener("DOMContentLoaded", () => {
+
+  const loginBtn = document.getElementById("loginBtn");
+  const signupBtn = document.getElementById("signupBtn");
+  const emailInput = document.getElementById("emailInput");
+  const passwordInput = document.getElementById("passwordInput");
+
+  loginBtn?.addEventListener("click", () => {
+    auth.signInWithEmailAndPassword(
+      emailInput.value, passwordInput.value
+    )
+    .then(() => window.location = "index.html")
+    .catch(e => alert(e.message));
+  });
+
+  signupBtn?.addEventListener("click", () => {
+    auth.createUserWithEmailAndPassword(
+      emailInput.value, passwordInput.value
+    )
+    .then(() => window.location = "index.html")
+    .catch(e => alert(e.message));
   });
 });
 
-/* SIGNUP */
-signupBtn?.addEventListener("click",()=>{
-  auth.createUserWithEmailAndPassword(
-    emailInput.value,passwordInput.value
-  ).then(()=>{
-    window.location="index.html";
-  }).catch(e=>{
-    loginError.textContent=e.message;
-  });
-});
 
 /* Redirect if not logged in */
 auth.onAuthStateChanged(user=>{
