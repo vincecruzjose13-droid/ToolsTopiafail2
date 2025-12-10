@@ -10,6 +10,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const auth=firebase.auth();
+const db = firebase.database();
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -42,3 +44,48 @@ auth.onAuthStateChanged(user=>{
     window.location="login.html";
   }
 })
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const addToolBtn = document.getElementById("addToolBtn");
+  const addTaskBtn = document.getElementById("addTaskBtn");
+  const addBorrowBtn = document.getElementById("addBorrowBtn");
+
+  const newToolName = document.getElementById("newToolName");
+  const newTaskText = document.getElementById("newTaskText");
+  const borrowToolName = document.getElementById("borrowToolName");
+  const borrowerName = document.getElementById("borrowerName");
+
+  /* ADD TOOL */
+  addToolBtn?.addEventListener("click", () => {
+    const toolName = newToolName.value.trim();
+    if(!toolName || !auth.currentUser) return;
+
+    const uid = auth.currentUser.uid;
+    db.ref("inventory/" + uid).push({ name: toolName });
+    newToolName.value = "";
+  });
+
+  /* ADD TASK */
+  addTaskBtn?.addEventListener("click", () => {
+    const taskText = newTaskText.value.trim();
+    if(!taskText || !auth.currentUser) return;
+
+    const uid = auth.currentUser.uid;
+    db.ref("tasks/" + uid).push({ text: taskText });
+    newTaskText.value = "";
+  });
+
+  /* ADD BORROW */
+  addBorrowBtn?.addEventListener("click", () => {
+    const tool = borrowToolName.value.trim();
+    const person = borrowerName.value.trim();
+    if(!tool || !person || !auth.currentUser) return;
+
+    const uid = auth.currentUser.uid;
+    db.ref("borrow/" + uid).push({ tool, person });
+    borrowToolName.value = "";
+    borrowerName.value = "";
+  });
+});
+
